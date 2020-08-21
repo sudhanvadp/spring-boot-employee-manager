@@ -24,10 +24,15 @@ public class EmployeeController {
         return employeeService.getAllEmployees();
     }
 
+    @GetMapping("/{id}")
+    public Employee getEmployee(@PathVariable int id) {
+        return employeeService.getEmployee(id);
+    }
+
     @PutMapping("/{id}")
     public String updateEmployee(@RequestBody Employee employee, @PathVariable int id) {
-        boolean res = employeeService.updateEmployee(id, employee);
-        return res? "Success": "Failure";
+        employeeService.updateEmployee(id, employee);
+        return "Requested for updation";
     }
 
     @DeleteMapping("/{id}")
