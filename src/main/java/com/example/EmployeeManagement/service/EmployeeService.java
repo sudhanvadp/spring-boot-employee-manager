@@ -17,7 +17,6 @@ import java.util.Optional;
 @Data
 public class EmployeeService {
     private final EmployeeDao employeeDao;
-    private final RabbitTemplate rabbitTemplate;
     Gson gson = new Gson();
 
     public void addEmployee(Employee employee) {
@@ -25,9 +24,11 @@ public class EmployeeService {
     }
 
     public void updateEmployee(int id, Employee employee) {
-        String message = id + "$"+gson.toJson(employee);
-        System.out.println("Sending message for employee updation : "+ message);
-        rabbitTemplate.convertAndSend(RabbitMQConfiguration.topicExchangeName, "sb.employee.update", message);
+        if(!employeeDao.findById(id).isPresent()) {
+            return;
+        }
+        employee.setId(id);
+        employeeDao.save(employee);
     }
 
     public boolean deleteEmployee(int id) {
