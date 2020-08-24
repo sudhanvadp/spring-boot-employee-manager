@@ -6,6 +6,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class Publisher {
     @Autowired
@@ -15,11 +17,11 @@ public class Publisher {
         send(RabbitMQConfiguration.topicExchangeName, RabbitMQConfiguration.keyAdd, employeeDto);
     }
 
-    public void updateEmployee(int id, EmployeeDto employeeDto) {
+    public void updateEmployee(UUID id, EmployeeDto employeeDto) {
         send(RabbitMQConfiguration.topicExchangeName, RabbitMQConfiguration.keyUpdate,  new Object[]{id, employeeDto});
     }
 
-    public void deleteEmployee(int id) {
+    public void deleteEmployee(UUID id) {
         send(RabbitMQConfiguration.topicExchangeName, RabbitMQConfiguration.keyDelete, id);
     }
 

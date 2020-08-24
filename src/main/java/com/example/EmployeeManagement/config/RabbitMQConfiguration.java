@@ -34,20 +34,16 @@ public class RabbitMQConfiguration {
     }
     @Bean
     Binding bindingAdd(@Qualifier("queueAdd") Queue queue, TopicExchange exchange) {
-        System.out.println("bindingAdd"+queue.getName());
-
         return BindingBuilder.bind(queue).to(exchange).with(keyAdd);
     }
 
     @Bean
     Binding bindingUpdate(@Qualifier("queueUpdate") Queue queue, TopicExchange exchange) {
-        System.out.println("bindingUpdate"+ queue.getName());
         return BindingBuilder.bind(queue).to(exchange).with(keyUpdate);
     }
 
     @Bean
     Binding bindingDelete(@Qualifier("queueDelete") Queue queue, TopicExchange exchange) {
-        System.out.println("bindingDelete"+ queue.getName());
         return BindingBuilder.bind(queue).to(exchange).with(keyDelete);
     }
 

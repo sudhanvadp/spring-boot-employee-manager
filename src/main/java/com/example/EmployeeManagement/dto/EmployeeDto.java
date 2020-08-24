@@ -1,16 +1,15 @@
 package com.example.EmployeeManagement.dto;
 
-import com.example.EmployeeManagement.model.Employee;
+import com.example.EmployeeManagement.entity.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class EmployeeDto implements Serializable {
-    int id;
+    UUID id;
     String name;
     String designation;
 

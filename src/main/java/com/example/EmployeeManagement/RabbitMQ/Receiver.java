@@ -8,13 +8,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class Receiver {
     final EmployeeDao employeeDao;
     final EmployeeService employeeService;
 
-    @RabbitListener(queues = RabbitMQConfiguration.keyAdd)
+    @RabbitListener(queues = RabbitMQConfiguration.queueAdd)
     public void receiveMessageAdd(EmployeeDto employeeDto) {
         try {
             System.out.println("Received <" + employeeDto.toString() + ">");
@@ -25,19 +27,19 @@ public class Receiver {
         }
     }
 
-    @RabbitListener(queues = RabbitMQConfiguration.keyUpdate)
+    @RabbitListener(queues = RabbitMQConfiguration.queueUpdate)
     public void receiveMessageUpdate(Object[] objects) {
         System.out.println("updating");
         try {
-            employeeService.updateEmployee((Integer) objects[0], (EmployeeDto) objects[1]);
+            employeeService.updateEmployee((UUID) objects[0], (EmployeeDto) objects[1]);
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    @RabbitListener(queues = RabbitMQConfiguration.keyDelete)
-    public void receiveMessageDelete(int id) {
+    @RabbitListener(queues = RabbitMQConfiguration.queueDelete)
+    public void receiveMessageDelete(UUID id) {
         try {
             System.out.println("Received <" + id + ">");
             employeeService.deleteEmployee(id);

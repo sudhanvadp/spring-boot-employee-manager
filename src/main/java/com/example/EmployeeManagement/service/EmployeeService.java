@@ -2,13 +2,14 @@ package com.example.EmployeeManagement.service;
 
 import com.example.EmployeeManagement.dao.EmployeeDao;
 import com.example.EmployeeManagement.dto.EmployeeDto;
-import com.example.EmployeeManagement.model.Employee;
+import com.example.EmployeeManagement.entity.Employee;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Data
@@ -20,7 +21,7 @@ public class EmployeeService {
         employeeDao.save(employee);
     }
 
-    public void updateEmployee(int id, EmployeeDto employeeDto) {
+    public void updateEmployee(UUID id, EmployeeDto employeeDto) {
         Employee employee = employeeDto.convertToEmployee();
         
         if(!employeeDao.findById(id).isPresent()) {
@@ -30,7 +31,7 @@ public class EmployeeService {
         employeeDao.save(employee);
     }
 
-    public void deleteEmployee(int id) {
+    public void deleteEmployee(UUID id) {
         if(!employeeDao.findById(id).isPresent()) {
             return;
         }
@@ -43,7 +44,7 @@ public class EmployeeService {
         return employeeDtos;
     }
 
-    public EmployeeDto getEmployee(int id) {
+    public EmployeeDto getEmployee(UUID id) {
         Optional<Employee> employee= employeeDao.findById(id);
         return employee.map(Employee::convertToEmployeeDto).orElse(null);
     }
