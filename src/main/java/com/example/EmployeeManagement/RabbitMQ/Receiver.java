@@ -1,11 +1,9 @@
 package com.example.EmployeeManagement.RabbitMQ;
 
 import com.example.EmployeeManagement.config.RabbitMQConfiguration;
-import com.example.EmployeeManagement.controller.EmployeeController;
-import com.example.EmployeeManagement.dao.EmployeeDao;
+import com.example.EmployeeManagement.dao.EmployeeRepository;
 import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.service.EmployeeService;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -19,7 +17,7 @@ import java.util.UUID;
 public class Receiver {
     private static final Logger logger = LoggerFactory.getLogger(Receiver.class);
     @Autowired
-    private EmployeeDao employeeDao;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private EmployeeService employeeService;
