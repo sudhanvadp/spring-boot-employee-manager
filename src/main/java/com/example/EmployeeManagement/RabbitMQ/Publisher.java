@@ -1,7 +1,10 @@
 package com.example.EmployeeManagement.RabbitMQ;
 
 import com.example.EmployeeManagement.config.RabbitMQConfiguration;
+import com.example.EmployeeManagement.controller.EmployeeController;
 import com.example.EmployeeManagement.dto.EmployeeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import java.util.UUID;
 
 @Service
 public class Publisher {
+    private static final Logger logger = LoggerFactory.getLogger(Publisher.class);
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -26,7 +30,7 @@ public class Publisher {
     }
 
     public void send(String topic, String routingKey, Object body) {
-        System.out.println("Sending message : routing key: "+routingKey+" body : "+ body.toString());
+        logger.info("Sending message : routing key: "+routingKey+" body : "+ body.toString());
         rabbitTemplate.convertAndSend(topic, routingKey, body);
     }
 }
