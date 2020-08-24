@@ -4,6 +4,7 @@ import com.example.EmployeeManagement.dao.EmployeeDao;
 import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.entity.Employee;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import java.util.UUID;
 @Service
 @Data
 public class EmployeeService {
-    private final EmployeeDao employeeDao;
+    @Autowired
+    private EmployeeDao employeeDao;
 
     public void addEmployee(EmployeeDto employeeDto) {
         Employee employee = employeeDto.convertToEmployee();

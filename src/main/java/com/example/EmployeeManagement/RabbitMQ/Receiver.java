@@ -6,15 +6,18 @@ import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class Receiver {
-    final EmployeeDao employeeDao;
-    final EmployeeService employeeService;
+    @Autowired
+    private EmployeeDao employeeDao;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @RabbitListener(queues = RabbitMQConfiguration.queueAdd)
     public void receiveMessageAdd(EmployeeDto employeeDto) {

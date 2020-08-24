@@ -12,15 +12,14 @@ import java.util.UUID;
 @Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 public class Employee {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
-    UUID id;
-    String name;
-    String designation;
+    private UUID id;
+    private String name;
+    private String designation;
 
     public EmployeeDto convertToEmployeeDto() {
         return new EmployeeDto(id, name, designation);

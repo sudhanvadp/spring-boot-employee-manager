@@ -9,9 +9,9 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class EmployeeDto implements Serializable {
-    UUID id;
-    String name;
-    String designation;
+    private UUID id;
+    private String name;
+    private String designation;
 
     public Employee convertToEmployee() {
         return new Employee(id, name, designation);
