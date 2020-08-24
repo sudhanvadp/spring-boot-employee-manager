@@ -1,5 +1,7 @@
 package com.example.EmployeeManagement.model;
 
+import com.example.EmployeeManagement.dto.EmployeeDto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,7 @@ import javax.persistence.Id;
 
 @Data
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 public class Employee {
     @Id
@@ -18,4 +21,7 @@ public class Employee {
     String name;
     String designation;
 
+    public EmployeeDto convertToEmployeeDto() {
+        return new EmployeeDto(id, name, designation);
+    }
 }

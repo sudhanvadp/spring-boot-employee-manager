@@ -1,50 +1,45 @@
 package com.example.EmployeeManagement.RabbitMQ;
 
+import com.example.EmployeeManagement.config.RabbitMQConfiguration;
 import com.example.EmployeeManagement.dao.EmployeeDao;
-import com.example.EmployeeManagement.model.Employee;
+import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.service.EmployeeService;
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class Receiver {
-    Gson gson = new Gson();
     final EmployeeDao employeeDao;
     final EmployeeService employeeService;
 
-    public void receiveMessageUpdate(String message) {
+    @RabbitListener(queues = RabbitMQConfiguration.keyAdd)
+    public void receiveMessageAdd(EmployeeDto employeeDto) {
         try {
-            System.out.println("Received <" + message + ">");
-            String[] idNEmployee = message.split("\\$");
-            int id = Integer.parseInt(idNEmployee[0]);
-            Employee employee = gson.fromJson(idNEmployee[1], Employee.class);
-            employeeService.updateEmployee(id, employee);
+            System.out.println("Received <" + employeeDto.toString() + ">");
+            employeeService.addEmployee(employeeDto);
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void receiveMessageAdd(String message) {
+    @RabbitListener(queues = RabbitMQConfiguration.keyUpdate)
+    public void receiveMessageUpdate(Object[] objects) {
+        System.out.println("updating");
         try {
-            System.out.println("Received <" + message + ">");
-            Employee employee = gson.fromJson(message, Employee.class);
-            employeeService.addEmployee(employee);
+            employeeService.updateEmployee((Integer) objects[0], (EmployeeDto) objects[1]);
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void receiveMessageDelete(String message) {
+    @RabbitListener(queues = RabbitMQConfiguration.keyDelete)
+    public void receiveMessageDelete(int id) {
         try {
-            System.out.println("Received <" + message + ">");
-            int id = Integer.parseInt(message);
+            System.out.println("Received <" + id + ">");
             employeeService.deleteEmployee(id);
         }
         catch (Exception e){

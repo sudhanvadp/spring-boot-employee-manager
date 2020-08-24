@@ -1,12 +1,9 @@
 package com.example.EmployeeManagement.service;
 
-import com.example.EmployeeManagement.RabbitMQ.RabbitMQConfiguration;
 import com.example.EmployeeManagement.dao.EmployeeDao;
+import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.model.Employee;
-import com.google.gson.Gson;
 import lombok.Data;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,13 +14,15 @@ import java.util.Optional;
 @Data
 public class EmployeeService {
     private final EmployeeDao employeeDao;
-    Gson gson = new Gson();
 
-    public void addEmployee(Employee employee) {
+    public void addEmployee(EmployeeDto employeeDto) {
+        Employee employee = employeeDto.convertToEmployee();
         employeeDao.save(employee);
     }
 
-    public void updateEmployee(int id, Employee employee) {
+    public void updateEmployee(int id, EmployeeDto employeeDto) {
+        Employee employee = employeeDto.convertToEmployee();
+        
         if(!employeeDao.findById(id).isPresent()) {
             return;
         }
@@ -31,23 +30,22 @@ public class EmployeeService {
         employeeDao.save(employee);
     }
 
-    public boolean deleteEmployee(int id) {
+    public void deleteEmployee(int id) {
         if(!employeeDao.findById(id).isPresent()) {
-            return false;
+            return;
         }
         employeeDao.deleteById(id);
-        return true;
     }
 
-    public List<Employee> getAllEmployees() {
-        List<Employee> employees = new ArrayList<>();
-        employeeDao.findAll().forEach(employees::add);
-        return employees;
+    public List<EmployeeDto> getAllEmployees() {
+        List<EmployeeDto> employeeDtos = new ArrayList<>();
+        employeeDao.findAll().forEach( (employee) ->  employeeDtos.add(employee.convertToEmployeeDto()));
+        return employeeDtos;
     }
 
-    public Employee getEmployee(int id) {
+    public EmployeeDto getEmployee(int id) {
         Optional<Employee> employee= employeeDao.findById(id);
-        return employee.orElse(null);
+        return employee.map(Employee::convertToEmployeeDto).orElse(null);
     }
 
 }
