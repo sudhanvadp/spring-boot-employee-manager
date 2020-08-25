@@ -5,7 +5,7 @@ import com.example.EmployeeManagement.entity.Employee;
 import java.util.Map;
 import java.util.UUID;
 
-public interface RedisRepository {
+public interface EmployeeRedisRepository {
     void save(Employee employee);
     Map<UUID, Employee> findAll();
     Employee findById(UUID id);

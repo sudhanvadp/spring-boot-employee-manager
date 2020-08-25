@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.serializer.*;
 
 @Configuration
 public class RedisConfiguration {
@@ -19,7 +19,11 @@ public class RedisConfiguration {
     public RedisTemplate<String, Employee> redisTemplate() {
         final RedisTemplate<String, Employee> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
-        template.setValueSerializer(new GenericToStringSerializer<Employee>(Employee.class));
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Employee.class));
+        template.setHashValueSerializer(new StringRedisSerializer());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.afterPropertiesSet();
         return template;
     }
 }

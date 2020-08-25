@@ -1,7 +1,7 @@
 package com.example.EmployeeManagement.service;
 
 import com.example.EmployeeManagement.dao.EmployeeRepository;
-import com.example.EmployeeManagement.dao.RedisRepository;
+import com.example.EmployeeManagement.dao.EmployeeRedisRepository;
 import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.entity.Employee;
 import lombok.Data;
@@ -24,25 +24,22 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    private RedisRepository redisRepository;
+    private EmployeeRedisRepository employeeRedisRepository;
 
     public void addEmployee(EmployeeDto employeeDto) {
         Employee employee = employeeDto.convertToEmployee();
         employeeRepository.save(employee);
-
-        redisRepository.save(employee);
+        employeeRedisRepository.save(employee);
     }
 
     public void updateEmployee(UUID id, EmployeeDto employeeDto) {
         Employee employee = employeeDto.convertToEmployee();
-        
         if(!employeeRepository.findById(id).isPresent()) {
             return;
         }
         employee.setId(id);
         employeeRepository.save(employee);
-
-        redisRepository.save(employee);
+        employeeRedisRepository.save(employee);
     }
 
     public void deleteEmployee(UUID id) {
@@ -50,8 +47,7 @@ public class EmployeeService {
             return;
         }
         employeeRepository.deleteById(id);
-
-        redisRepository.delete(id);
+        employeeRedisRepository.delete(id);
     }
 
     public List<EmployeeDto> getAllEmployeesDB() {
@@ -61,17 +57,19 @@ public class EmployeeService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         List<EmployeeDto> employeeDtos = new ArrayList<>();
-        employeeRepository.findAll().forEach( (employee) ->  employeeDtos.add(employee.convertToEmployeeDto()));
-        return employeeDtos;
+        employeeRepository.findAll().forEach( (employee) ->  {
+            employeeDtos.add(employee.convertToEmployeeDto());
+            employeeRedisRepository.save(employee);
+        });        return employeeDtos;
     }
 
     public List<EmployeeDto> getAllEmployeesCache() {
         List<EmployeeDto> employeeDtos = new ArrayList<>();
-        redisRepository.findAll().values().forEach( (employee) ->  employeeDtos.add(employee.convertToEmployeeDto()));
+        employeeRedisRepository.findAll().values().forEach( (employee) ->  employeeDtos.add(employee.convertToEmployeeDto()));
         return employeeDtos;
     }
+
 
     public List<EmployeeDto> getAllEmployees() {
         List<EmployeeDto> employeeDtosCache= getAllEmployeesCache();
@@ -79,18 +77,22 @@ public class EmployeeService {
     }
 
     public EmployeeDto getEmployeeDB(UUID id) {
-        logger.info("Access db for all employee "+ id);
+        logger.info("Access db for employee "+ id);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Optional<Employee> employee= employeeRepository.findById(id);
-        return employee.map(Employee::convertToEmployeeDto).orElse(null);
+        Optional<Employee> employeeOp = employeeRepository.findById(id);
+        if(employeeOp.isPresent()) {
+            employeeRedisRepository.save(employeeOp.get());
+        }
+
+        return employeeOp.map(Employee::convertToEmployeeDto).orElse(null);
     }
 
     public EmployeeDto getEmployeeCache(UUID id) {
-        Employee employee = redisRepository.findById(id);
+        Employee employee = employeeRedisRepository.findById(id);
         return employee==null? null : employee.convertToEmployeeDto();
     }
 
