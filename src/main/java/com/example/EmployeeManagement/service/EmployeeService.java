@@ -4,6 +4,7 @@ import com.example.EmployeeManagement.dao.EmployeeRepository;
 import com.example.EmployeeManagement.dao.EmployeeRedisRepository;
 import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.entity.Employee;
+import com.example.EmployeeManagement.kafka.KafkaSender;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ import java.util.UUID;
 @Data
 public class EmployeeService {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
+    @Autowired
+    KafkaSender kafkaSender;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -52,11 +55,6 @@ public class EmployeeService {
 
     public List<EmployeeDto> getAllEmployeesDB() {
         logger.info("Access db for all employees");
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         List<EmployeeDto> employeeDtos = new ArrayList<>();
         employeeRepository.findAll().forEach( (employee) ->  {
             employeeDtos.add(employee.convertToEmployeeDto());
@@ -64,17 +62,17 @@ public class EmployeeService {
         });        return employeeDtos;
     }
 
-    public List<EmployeeDto> getAllEmployeesCache() {
-        List<EmployeeDto> employeeDtos = new ArrayList<>();
-        employeeRedisRepository.findAll().values().forEach( (employee) ->  employeeDtos.add(employee.convertToEmployeeDto()));
-        return employeeDtos;
-    }
-
-
-    public List<EmployeeDto> getAllEmployees() {
-        List<EmployeeDto> employeeDtosCache= getAllEmployeesCache();
-        return employeeDtosCache.isEmpty()? getAllEmployeesDB(): employeeDtosCache;
-    }
+//    public List<EmployeeDto> getAllEmployeesCache() {
+//        List<EmployeeDto> employeeDtos = new ArrayList<>();
+//        employeeRedisRepository.findAll().values().forEach( (employee) ->  employeeDtos.add(employee.convertToEmployeeDto()));
+//        return employeeDtos;
+//    }
+//
+//
+//    public List<EmployeeDto> getAllEmployees() {
+//        List<EmployeeDto> employeeDtosCache= getAllEmployeesCache();
+//        return employeeDtosCache.isEmpty()? getAllEmployeesDB(): employeeDtosCache;
+//    }
 
     public EmployeeDto getEmployeeDB(UUID id) {
         logger.info("Access db for employee "+ id);

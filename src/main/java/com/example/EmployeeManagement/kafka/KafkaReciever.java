@@ -1,29 +1,29 @@
-package com.example.EmployeeManagement.RabbitMQ;
+package com.example.EmployeeManagement.kafka;
 
+import com.example.EmployeeManagement.RabbitMQ.Receiver;
 import com.example.EmployeeManagement.config.RabbitMQConfiguration;
-import com.example.EmployeeManagement.dao.EmployeeRepository;
 import com.example.EmployeeManagement.dto.EmployeeDto;
 import com.example.EmployeeManagement.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.UUID;
 
 @Service
-public class Receiver {
-    private static final Logger logger = LoggerFactory.getLogger(Receiver.class);
-
+public class KafkaReciever {
+    private static final Logger logger = LoggerFactory.getLogger(KafkaReciever.class);
     @Autowired
     private EmployeeService employeeService;
 
-    @RabbitListener(queues = RabbitMQConfiguration.queueAdd)
-    public void receiveMessageAdd(EmployeeDto employeeDto) {
+    @KafkaListener(id = "add", topics = "employeeAdd")
+    public void listenAdd(EmployeeDto employeeDto) {
+        logger.info("Received: " + employeeDto.toString());
         try {
-            logger.info("Received <" + employeeDto + ">");
             employeeService.addEmployee(employeeDto);
         }
         catch (Exception e){
@@ -31,10 +31,10 @@ public class Receiver {
         }
     }
 
-    @RabbitListener(queues = RabbitMQConfiguration.queueUpdate)
-    public void receiveMessageUpdate(Object[] objects) {
+    @KafkaListener(id = "update", topics = "employeeUpdate")
+    public void listenUpdate(Object[] objects) {
         try {
-            logger.info("Received <" + Arrays.toString(objects) + ">");
+            logger.info("Received: " + Arrays.toString(objects));
             employeeService.updateEmployee((UUID) objects[0], (EmployeeDto) objects[1]);
         }
         catch (Exception e){
@@ -42,15 +42,14 @@ public class Receiver {
         }
     }
 
-    @RabbitListener(queues = RabbitMQConfiguration.queueDelete)
-    public void receiveMessageDelete(UUID id) {
+    @KafkaListener(id = "delete", topics = "employeeDelete")
+    public void listenDelete(UUID id) {
         try {
-            logger.info("Received <" + id + ">");
-            employeeService.deleteEmployee(id);
+            logger.info("Received: " + id);
+            employeeService.deleteEmployee(id);//UUID.fromString(id.replaceAll("\"", "")));
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
-
 }

@@ -2,6 +2,7 @@ package com.example.EmployeeManagement.controller;
 
 import com.example.EmployeeManagement.RabbitMQ.Publisher;
 import com.example.EmployeeManagement.dto.EmployeeDto;
+import com.example.EmployeeManagement.kafka.KafkaSender;
 import com.example.EmployeeManagement.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,18 +22,18 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @Autowired
-    private Publisher publisher;
+    private KafkaSender kafkaSender;
 
     @PostMapping("/add")
     public String addEmployee(@RequestBody EmployeeDto employeeDto) {
-        publisher.addEmployee(employeeDto);
+        kafkaSender.kafkaAddEmployee(employeeDto);
         return "Requested for addition";
     }
 
     @GetMapping
     public List<EmployeeDto> getEmployees() {
         logger.info("Get all Employees");
-        return employeeService.getAllEmployees();
+        return employeeService.getAllEmployeesDB();
     }
 
     @GetMapping("/{id}")
@@ -49,7 +50,7 @@ public class EmployeeController {
     public EmployeeDto updateEmployee(@RequestBody EmployeeDto employeeDto, @PathVariable UUID id) {
         employeeDto.setId(id);
         logger.info("Update Employee : "+ id +"\n" +employeeDto.toString());
-        publisher.updateEmployee(id, employeeDto);
+        kafkaSender.kafkaUpdateEmployee(id, employeeDto);
         return employeeDto;
     }
 
@@ -57,7 +58,7 @@ public class EmployeeController {
 //    @CacheEvict(value = "empl", key="#id")
     public String deleteEmployee(@PathVariable UUID id) {
         logger.info("Delete Employee : "+ id);
-        publisher.deleteEmployee(id);
+        kafkaSender.kafkaDeleteEmployee(id);
         return "Requested for deletion";
     }
 
