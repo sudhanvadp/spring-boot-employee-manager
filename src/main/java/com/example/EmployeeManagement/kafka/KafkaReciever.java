@@ -32,10 +32,10 @@ public class KafkaReciever {
     }
 
     @KafkaListener(id = "update", topics = "employeeUpdate")
-    public void listenUpdate(Object[] objects) {
+    public void listenUpdate(EmployeeDto employeeDto) {
         try {
-            logger.info("Received: " + Arrays.toString(objects));
-            employeeService.updateEmployee(UUID.fromString((String) objects[0]), (EmployeeDto) objects[1]);
+            logger.info("Received: " + employeeDto);
+            employeeService.updateEmployee(employeeDto.getId(), employeeDto);
         }
         catch (Exception e){
             e.printStackTrace();

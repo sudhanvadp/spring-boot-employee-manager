@@ -17,9 +17,9 @@ public class KafkaSender {
         kafkaTemplate.send(kafkaTopic, employeeDto);
     }
 
-    public void kafkaUpdateEmployee(UUID id, EmployeeDto employeeDto) {
+    public void kafkaUpdateEmployee(EmployeeDto employeeDto) {
         String kafkaTopic = "employeeUpdate";
-        kafkaTemplate.send(kafkaTopic, new Object[]{id, employeeDto});
+        kafkaTemplate.send(kafkaTopic, employeeDto);
     }
 
     public void kafkaDeleteEmployee(UUID id) {

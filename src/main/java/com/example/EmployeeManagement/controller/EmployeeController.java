@@ -50,7 +50,7 @@ public class EmployeeController {
     public EmployeeDto updateEmployee(@RequestBody EmployeeDto employeeDto, @PathVariable UUID id) {
         employeeDto.setId(id);
         logger.info("Update Employee : "+ id +"\n" +employeeDto.toString());
-        kafkaSender.kafkaUpdateEmployee(id, employeeDto);
+        kafkaSender.kafkaUpdateEmployee(employeeDto);
         return employeeDto;
     }
 
