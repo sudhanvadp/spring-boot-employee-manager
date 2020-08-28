@@ -37,7 +37,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-//    @Cacheable(value = "empl", key = "#id")
+    @Cacheable(value = "empl", key = "#id")
     public EmployeeDto getEmployee(@PathVariable UUID id) {
         logger.info("Get Employee : "+ id);
         EmployeeDto result = employeeService.getEmployee(id);
@@ -46,7 +46,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-//    @CachePut(value = "empl", key="#id")
+    @CachePut(value = "empl", key="#id")
     public EmployeeDto updateEmployee(@RequestBody EmployeeDto employeeDto, @PathVariable UUID id) {
         employeeDto.setId(id);
         logger.info("Update Employee : "+ id +"\n" +employeeDto.toString());
@@ -55,7 +55,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-//    @CacheEvict(value = "empl", key="#id")
+    @CacheEvict(value = "empl", key="#id")
     public String deleteEmployee(@PathVariable UUID id) {
         logger.info("Delete Employee : "+ id);
         kafkaSender.kafkaDeleteEmployee(id);
